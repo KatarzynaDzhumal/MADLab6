@@ -4,14 +4,26 @@ import PersonalInfo from './components/PersonalInfo';
 import MovieBooking from './components/MovieBooking';
 import {useState} from 'react';
 import * as Crypto from 'expo-crypto';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App() {
   var uuid = Crypto.randomUUID();//this uses the Crypto library to generate a Universal Unique Identifier
 
     async function saveData() {
         alert("Saved with UUID: " + uuid);
-        Alert.alert("Saved with UUID: " + uuid);
+        alert("Saved with UUID: " + uuid);
+        await AsyncStorage.setItem(uuid, JSON.stringify(booking));
 }
+
+    async function getData() {
+        try {
+            let thisBooking = await AsyncStorage.getItem(uuid);
+            let parsedBooking = JSON.parse(thisBooking); // Convert from string to object
+            alert("Movie Title: " + parsedBooking.movieTitle);
+        } catch (error) {
+          alert("Error getting data: " + error.message);
+        }
+      }
 
   
   const [booking, setBooking] = useState({
@@ -29,11 +41,8 @@ export default function App() {
           <MovieBooking screenstyle={styles.screen} data={booking} setData={setBooking}/>
       </Swiper>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={saveData}
-      >
-        <Text style={{ fontSize: 24, fontWeight: "bold" }}> Save Data</Text></TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={saveData}><Text style={{ fontSize: 24, fontWeight: "bold" }}> Save Data</Text></TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={getData}><Text style={{ fontSize: 24, fontWeight: "bold" }}> Get Data</Text></TouchableOpacity>
     </View>
 
   )
